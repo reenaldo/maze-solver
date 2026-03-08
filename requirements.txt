@@ -1,0 +1,3 @@
+# Requirements for the maze visualizer
+pygame>=2.0
+

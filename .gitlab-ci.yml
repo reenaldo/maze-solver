@@ -1,0 +1,46 @@
+# GitLab CI configuration for Maze Solver project
+# Builds the project and runs the test binary.
+
+image: gcc:latest
+
+stages:
+  - build
+  - test
+
+variables:
+  # Small speed-ups and ensure deterministic locale
+  LC_ALL: C.UTF-8
+
+cache:
+  paths:
+    - build/
+
+build:
+  stage: build
+  script:
+    - echo "Building project with make..."
+    - make
+    - echo "Also build test binaries so they are available to the test job..."
+    - make build/bin/maze_tests build/bin/bfs_tests
+  artifacts:
+    paths:
+      - build/bin/
+      - build/obj/
+    expire_in: 1 hour
+
+test:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - echo "Running test binary..."
+    - ls -la build/bin
+    - echo "Running maze tests binary..."
+    - ./build/bin/maze_tests
+    - echo "Running bfs tests binary..."
+    - ./build/bin/bfs_tests
+  artifacts:
+    when: always
+    paths:
+      - build/bin/
+    expire_in: 1 hour
